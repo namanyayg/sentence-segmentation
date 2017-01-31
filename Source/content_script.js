@@ -1,14 +1,12 @@
 walk(document.body);
 
-function walk(node) 
-{
+function walk(node) {
 	// I stole this function from here:
 	// http://is.gd/mwZp7E
 	
 	var child, next;
 	
-	if (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase() == 'textarea'
-	    || node.classList.indexOf('ace_editor') > -1) {
+	if (node.tagName && (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase() == 'textarea')) {
 		return;
 	}
 
@@ -32,16 +30,18 @@ function walk(node)
 	}
 }
 
-function handleText(textNode) 
-{
-	var v = textNode.nodeValue;
+function handleText(textNode) {
+	var match
+		, re = /\.\s+([A-Z])/g
+		, n = textNode
 
-	v = v.replace(/\bThe Cloud\b/g, "My Butt");
-	v = v.replace(/\bThe cloud\b/g, "My butt");
-	v = v.replace(/\bthe Cloud\b/g, "my Butt");
-	v = v.replace(/\bthe cloud\b/g, "my butt");
-	
-	textNode.nodeValue = v;
+	while ((match = re.exec(n.nodeValue)) != null) {
+		var splitIdx = match.index + (match.index !== n.nodeValue.length ? 1 : 0) // Get the space
+		var newNode = n.splitText(splitIdx)
+		n.parentElement.insertBefore(document.createElement('br'), newNode)
+		n = newNode
+		console.log(n, match, match.index, newNode, re.exec(newNode.nodeValue), re.exec(n.nodeValue))
+	}
 }
 
 
